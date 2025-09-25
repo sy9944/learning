@@ -84,7 +84,7 @@ jobs:
                   title = issue.title.lower()
                   if any(word in title for word in ['javascript', 'js', 'react', 'vue', 'css', 'html']):
                       category = 'フロントエンド'
-                  elif any(word in title for word in ['python', 'java', 'node', 'go', 'database', 'sql']):
+                  elif any(word in title for word in ['python', 'java', 'node', 'go', 'database', 'sql', 'php']):
                       category = 'バックエンド'
                   elif any(word in title for word in ['docker', 'kubernetes', 'aws', 'gcp', 'ci/cd']):
                       category = 'DevOps'
