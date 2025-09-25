@@ -1,5 +1,5 @@
 # 📘 学習記録システム使い方ガイド
-
+https://github.com/sy9944/learning
 このガイドでは、学習記録システムの使い方を初心者の方にも分かりやすく説明します。
 
 ## 🎯 システムの目的
@@ -105,6 +105,7 @@ frontend/          # フロントエンド技術
 backend/           # バックエンド技術
 ├── nodejs/        # Node.js
 ├── python/        # Python
+├── php/           # PHP
 ├── java/          # Java
 ├── go/            # Go言語
 └── database/      # データベース
