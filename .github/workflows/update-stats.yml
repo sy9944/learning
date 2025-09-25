@@ -1,0 +1,252 @@
+name: Update Learning Statistics
+
+on:
+  issues:
+    types: [opened, closed, labeled, unlabeled]
+  schedule:
+    # 毎日午前9時（UTC）に実行
+    - cron: '0 9 * * *'
+  workflow_dispatch: # 手動実行可能
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install requests PyGithub
+          
+      - name: Create update script
+        run: |
+          cat > update_stats.py << 'EOF'
+          import os
+          import requests
+          from datetime import datetime
+          import json
+          from github import Github
+          
+          def get_learning_stats(repo):
+              """学習統計を取得"""
+              try:
+                  label = repo.get_label('学習記録')
+                  issues = repo.get_issues(state='all', labels=[label])
+              except:
+                  # ラベルが存在しない場合は空の統計を返す
+                  return {
+                      'total_learning_topics': 0,
+                      'completed_topics': 0,
+                      'in_progress_topics': 0,
+                      'categories': {},
+                      'this_month_completed': 0,
+                      'this_year_completed': 0
+                  }
+              
+              stats = {
+                  'total_learning_topics': 0,
+                  'completed_topics': 0,
+                  'in_progress_topics': 0,
+                  'categories': {},
+                  'this_month_completed': 0,
+                  'this_year_completed': 0
+              }
+              
+              current_year = datetime.now().year
+              current_month = datetime.now().month
+              
+              for issue in issues:
+                  stats['total_learning_topics'] += 1
+                  
+                  # ステータス分析
+                  if issue.state == 'closed':
+                      stats['completed_topics'] += 1
+                      if issue.closed_at:
+                          if issue.closed_at.year == current_year:
+                              stats['this_year_completed'] += 1
+                              if issue.closed_at.month == current_month:
+                                  stats['this_month_completed'] += 1
+                  else:
+                      stats['in_progress_topics'] += 1
+                  
+                  # カテゴリ分析
+                  category = 'その他'
+                  title = issue.title.lower()
+                  if any(word in title for word in ['javascript', 'js', 'react', 'vue', 'css', 'html']):
+                      category = 'フロントエンド'
+                  elif any(word in title for word in ['python', 'java', 'node', 'go', 'database', 'sql']):
+                      category = 'バックエンド'
+                  elif any(word in title for word in ['docker', 'kubernetes', 'aws', 'gcp', 'ci/cd']):
+                      category = 'DevOps'
+                  elif any(word in title for word in ['ios', 'android', 'flutter', 'mobile']):
+                      category = 'モバイル'
+                  elif any(word in title for word in ['algorithm', 'design pattern', 'architecture']):
+                      category = 'その他'
+                  
+                  if category not in stats['categories']:
+                      stats['categories'][category] = {'total': 0, 'completed': 0}
+                  stats['categories'][category]['total'] += 1
+                  if issue.state == 'closed':
+                      stats['categories'][category]['completed'] += 1
+              
+              return stats
+          
+          def update_readme(stats):
+              """README.mdを更新"""
+              now = datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')
+              
+              readme_lines = [
+                  "# 🎓 Learning Record System",
+                  "",
+                  "エンジニアとしての継続学習を記録・可視化するためのポートフォリオシステムです。",
+                  "",
+                  "## 📊 学習統計",
+                  "",
+                  "### 全体サマリー",
+                  f"- **総学習トピック数**: {stats['total_learning_topics']}",
+                  f"- **完了済み**: {stats['completed_topics']}",
+                  f"- **進行中**: {stats['in_progress_topics']}",
+                  f"- **今月完了**: {stats['this_month_completed']}",
+                  f"- **今年完了**: {stats['this_year_completed']}",
+                  "",
+                  "### カテゴリ別統計"
+              ]
+              
+              if stats['categories']:
+                  for category, data in stats['categories'].items():
+                      completion_rate = (data['completed'] / data['total'] * 100) if data['total'] > 0 else 0
+                      readme_lines.append(f"- **{category}**: {data['completed']}/{data['total']} ({completion_rate:.1f}%完了)")
+              else:
+                  readme_lines.append("データの蓄積中...")
+              
+              readme_lines.extend([
+                  "",
+                  "## 🗂️ 学習分野",
+                  "",
+                  "### [Frontend](./frontend/)",
+                  "フロントエンド技術の学習記録",
+                  "- JavaScript, TypeScript",
+                  "- React, Vue.js",
+                  "- CSS, UI/UX",
+                  "",
+                  "### [Backend](./backend/)",
+                  "バックエンド技術の学習記録",
+                  "- Node.js, Python, Java, Go",
+                  "- データベース設計・管理",
+                  "",
+                  "### [DevOps](./devops/)",
+                  "DevOps・インフラ技術の学習記録",
+                  "- Docker, Kubernetes",
+                  "- CI/CD, AWS, GCP",
+                  "",
+                  "### [Mobile](./mobile/)",
+                  "モバイルアプリ開発の学習記録",
+                  "- iOS (Swift), Android (Kotlin)",
+                  "- Flutter (Dart)",
+                  "",
+                  "### [Others](./others/)",
+                  "その他の技術・スキルの学習記録",
+                  "- アルゴリズム・データ構造",
+                  "- デザインパターン",
+                  "- システムアーキテクチャ",
+                  "",
+                  "## 🚀 使い方",
+                  "",
+                  "1. **新しい学習を開始**: [Issues](../../issues/new?template=learning-record.md)から学習記録を作成",
+                  "2. **進捗を更新**: Issue上で学習の進捗を随時更新",
+                  "3. **完了時**: Issueをクローズして学習完了をマーク",
+                  "",
+                  "詳細は[使い方ガイド](./USAGE.md)をご確認ください。",
+                  "",
+                  "## 🛠️ システム機能",
+                  "",
+                  "- ✅ 技術分野別のフォルダ構造",
+                  "- ✅ 学習記録用Issueテンプレート",
+                  "- ✅ 自動統計更新（GitHub Actions）",
+                  "- ✅ 進捗可視化ダッシュボード",
+                  "",
+                  "## 📈 最新更新",
+                  "",
+                  f"最終更新: {now}",
+                  "",
+                  "---",
+                  "",
+                  "> このシステムは学習の継続性を支援し、採用活動でのポートフォリオとして活用できるよう設計されています。"
+              ])
+              
+              return "\n".join(readme_lines)
+          
+          # メイン処理
+          def main():
+              token = os.environ['GITHUB_TOKEN']
+              repo_owner = os.environ['REPO_OWNER']
+              repo_name = os.environ['REPO_NAME']
+              
+              g = Github(token)
+              repo = g.get_repo(f"{repo_owner}/{repo_name}")
+              
+              try:
+                  # 学習記録ラベルが存在しない場合は作成
+                  try:
+                      repo.get_label('学習記録')
+                  except:
+                      repo.create_label('学習記録', 'e1f5fe', '学習記録に関するIssue')
+                      
+                  try:
+                      repo.get_label('進行中')
+                  except:
+                      repo.create_label('進行中', 'fbca04', '現在進行中の学習')
+                      
+                  # 統計取得
+                  stats = get_learning_stats(repo)
+                  
+                  # README更新
+                  new_readme = update_readme(stats)
+                  
+                  # ファイル更新
+                  try:
+                      readme_file = repo.get_contents("README.md")
+                      repo.update_file("README.md", "📊 Update learning statistics [automated]", new_readme, readme_file.sha)
+                  except:
+                      repo.create_file("README.md", "📊 Create learning statistics [automated]", new_readme)
+                      
+                  print("✅ Learning statistics updated successfully!")
+                  
+              except Exception as e:
+                  print(f"❌ Error: {e}")
+                  # エラーでもワークフローを失敗させない
+                  pass
+          
+          if __name__ == "__main__":
+              main()
+          EOF
+          
+      - name: Update learning statistics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          python update_stats.py
+          
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📊 Update learning statistics [automated]"
+            git push
+          fi
