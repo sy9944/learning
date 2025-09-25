@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 使い方ガイド
+    url: https://github.com/sy9944/learning/blob/main/USAGE.md
+    about: システムの使い方について詳しく知りたい場合
+  - name: 💬 ディスカッション
+    url: https://github.com/sy9944/learning/discussions
+    about: 質問・相談・アイデアの共有
