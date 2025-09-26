@@ -43,6 +43,10 @@ DevOps・インフラ技術の学習記録
 - デザインパターン
 - システムアーキテクチャ
 
+### [App](./app/)
+アプリケーション開発プロジェクトの学習記録
+- guess4: 数字当てゲーム（Next.js + Socket.io）
+
 ## 🚀 使い方
 
 1. **新しい学習を開始**: [Issues](../../issues/new?template=learning-record.md)から学習記録を作成
