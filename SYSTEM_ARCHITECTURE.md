@@ -43,6 +43,9 @@ learning/
 │   ├── design-patterns/          # Design patterns, architecture patterns
 │   ├── architecture/             # System architecture, design methods
 │   └── README.md                 # Others overview
+├── app/                          # Application projects
+│   ├── guess4/                   # Number guessing game (Next.js + Socket.io)
+│   └── README.md                 # App projects overview
 ├── README.md                     # Main dashboard with statistics
 ├── USAGE.md                      # Beginner's guide
 ├── SAMPLE_LEARNING_RECORD.md     # Example learning record
