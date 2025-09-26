@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, use } from 'react'
 import { useSocket } from '@/hooks/useSocket'
 import NumberSelector from './NumberSelector'
 
-export default function RoomPage({ params }: { params: { roomId: string } }) {
-  const { roomId } = params
+function RoomPageContent({ roomId }: { roomId: string }) {
   const socket = useSocket(roomId)
 
   const [message, setMessage] = useState<string | null>(null)
@@ -61,4 +60,9 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       </p>
     </main>
   )
+}
+
+export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
+  const { roomId } = use(params)
+  return <RoomPageContent roomId={roomId} />
 }
