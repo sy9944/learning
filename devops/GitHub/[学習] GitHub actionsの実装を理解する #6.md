@@ -2,6 +2,7 @@ GitHub Actionsを設定するにはリポジトリ内に `workflows` フォル�
 
 
 name:, on:, jobs: の3つが基本的な構成になる
+
 構成
 ```yaml
 name:
@@ -47,11 +48,10 @@ jobs:
             python-version: '3.11' # バージョン指定
             
         - name: Install dependencies # Pythonのパッケージをインストール
-            # run:ステップでは、仮想環境のシェルでコマンドを自動で実行する
-            # シェルコマンドを実行
-            # シェルは、コンピュータとユーザーの間でコマンドを受け付けて実行するプログラム
-            # ターミナルは、シェルを操作するための画面やアプリ
-            run: | 
+            run: |  # run:ステップでは、仮想環境のシェルでコマンドを自動で実行する
+                    # シェルコマンドを実行
+                    # シェルは、コンピュータとユーザーの間でコマンドを受け付けて実行するプログラム
+                    # ターミナルは、シェルを操作するための画面やアプリ
             pip install requests PyGithub  # requests と PyGithub をインストール
                                            # それぞれ外部ライブラリなのでインストールが必要
         
@@ -255,6 +255,8 @@ jobs:
                     try:
                         repo.get_label('学習記録')  # 存在すればラベルオブジェクトが返る
                                                    # ラベルの名前・色・説明などを持ったオブジェクト
+                                                   # 存在しなければ例外(`UnknownObjectException`など)が自動的に発生する
+                                                   # → exceptブロックが実行される
                     except:
                         repo.create_label('学習記録', 'e1f5fe', '学習記録に関するIssue')
                         
@@ -264,7 +266,7 @@ jobs:
                         repo.create_label('進行中', 'fbca04', '現在進行中の学習')
                         
                     # 統計取得
-                    stats = get_learning_stats(repo)
+                    stats = get_learning_stats(repo) # 上記で定義している
                     
                     # README更新
                     new_readme = update_readme(stats)
