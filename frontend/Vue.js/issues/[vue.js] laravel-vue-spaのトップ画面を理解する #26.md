@@ -90,7 +90,7 @@ export default {
 
 ## 疑問
 ### Q:なんでHOMEが大文字で表記されている？
-A: basc.cssに定義されているから
+A: basic.vueに定義されているから
 `resources/js/layouts/basic.vue`で記述されている
 ```vue
 <style lang="scss">
