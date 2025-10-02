@@ -1,15 +1,52 @@
 ## 学習したこと
-- 構成
+### 構成
 ```
 <template>...</template>
 <script>...</script>
 <style>...</style>
 ```
-- Vuexを利用して状態管理を行なっている。
-- Vuexのauthモジュールは `resource/js/store/mojules/auth.js` に定義されている
-- マスタッシュ構文
+### Vuexを利用して状態管理を行なっている。
+### Vuexのauthモジュールは `resource/js/store/mojules/auth.js` に定義されている
+### マスタッシュ構文
 Vueコンポーネントのテンプレート内で、`data`や`computed`などで定義した値をHTMLに埋め込むための記法
-- `<router-link>`は内部的に`<a>`タグを生成するコンポーネント
+### `<router-link>`は内部的に`<a>`タグを生成するコンポーネント
+### Vuexのヘルパー関数`mapGetters`
+mapGettersは、VueコンポーネントのcomputedプロパティにVuexストアのgetterを簡単にマッピング（割り当て）するための関数です。
+```js
+import { mapGetters } from 'vuex'
+
+export default {
+  computed: mapGetters({
+    authenticated: 'auth/check'
+  })
+}
+```
+このように使うことで、Vuexストアのgetter（例: auth/check）をコンポーネント内でthis.authenticatedとして参照できるようになります。
+
+`computed`で自分で関数を書く代わりに、Vuexストアのgetterをそのまま使える
+### `computed`プロパティ
+Vue.jsのコンポーネントで使える「算出プロパティ」
+- `data`の値や他の値を元に、自動的に計算された値を返す
+- 値が変わらない限り、計算結果をキャッシュ(再利用)する
+- テンプレート内で変数のように使える
+
+例:
+```js
+data() {
+  return { firstName: 'Taro', lastName: 'Yamada' }
+},
+computed: {
+  fullName() {
+    return this.firstName + ' ' + this.lastName
+  }
+}
+```
+この場合、{{ fullName }}と書くと、「Taro Yamada」と表示される。
+- `computed`は計算された値を定義する場所
+- テンプレートやメソッドから`this.プロパティ名`で使える
+- Vuexのgetterも`computed`でマッピングして使うことが多い。
+### Vuexストアの作成・初期化は`resources/js/store/index.js`で行っている
+各モジュールは`resources/store/modules`で定義されている
 
 ## wip:コードリーディング
 ```vue
@@ -50,6 +87,8 @@ Vueコンポーネントのテンプレート内で、`data`や`computed`など�
 
 <script>
 import { mapGetters } from 'vuex'
+// Vuexのヘルパー関数`mapGetters`をインポート
+// mapGettersは、VueコンポーネントのcomputedプロパティにVueストアのgetterを簡単にマッピングするための関数
 
 export default {
   layout: 'basic',
