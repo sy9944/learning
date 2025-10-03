@@ -1,5 +1,5 @@
-各グループごとに値の初出順を記録するPHPコード例
-<?php
+## 各グループごとに値の初出順を記録するPHPコード例
+```php
 $firstOrderPerGroup = [];
 foreach ($items as $item) {
     // グループキーと値を取得
@@ -16,4 +16,4 @@ foreach ($items as $item) {
     }
 }
 // $firstOrderPerGroup['A'] = ['foo' => 0, 'bar' => 1, ...]
-?>
+```
