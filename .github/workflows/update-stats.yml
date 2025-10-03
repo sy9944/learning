@@ -131,10 +131,10 @@ jobs:
                   
                   # ファイル更新
                   try:
-                      readme_file = repo.get_contents("README.md")
-                      repo.update_file("README.md", "📊 Update learning statistics [automated]", new_readme, readme_file.sha)
+                      readme_file = repo.get_contents("README.auto.md")
+                      repo.update_file("README.auto.md", "📊 Update learning statistics [automated]", new_readme, readme_file.sha)
                   except:
-                      repo.create_file("README.md", "📊 Create learning statistics [automated]", new_readme)
+                      repo.create_file("README.auto.md", "📊 Create learning statistics [automated]", new_readme)
                       
                   print("✅ Learning statistics updated successfully!")
                   
@@ -154,12 +154,19 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
         run: |
           python update_stats.py
+
+      - name: Combine README files
+        run: |
+          echo "# Combined README" > README.md
+          cat README.manual.md >> README.md
+          echo "\n---\n" >> README.md
+          cat README.auto.md >> README.md
           
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add README.md
+          git add README.md README.auto.md
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
