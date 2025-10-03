@@ -153,9 +153,7 @@ jobs:
 
       - name: Combine README files
         run: |
-          echo "# Combined README" > README.md
           cat README.manual.md >> README.md
-          echo "\n---\n" >> README.md
           cat README.auto.md >> README.md
           
       - name: Commit changes
