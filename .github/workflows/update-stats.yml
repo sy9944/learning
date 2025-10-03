@@ -170,6 +170,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
+            git pull --rebase
             git commit -m "📊 Update learning statistics [automated]"
             git push
           fi
