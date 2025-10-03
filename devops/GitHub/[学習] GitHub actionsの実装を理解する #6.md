@@ -89,6 +89,8 @@ jobs:
                 try:
                     label = repo.get_label('学習記録')
                     issues = repo.get_issues(state='all', labels=[label])
+                    # ステータスはopen/closed両方
+                    # 学習記録というラベル
                 except:
                     # ラベルが存在しない場合は空の統計を返す
                     return {
@@ -128,8 +130,9 @@ jobs:
                     
                     # カテゴリ分析
                     category = 'その他'
-                    title = issue.title.lower()
-                    if any(word in title for word in ['javascript', 'js', 'react', 'vue', 'css', 'html']):
+                    title = issue.title.lower() # lower()は文字列を全て小文字にするPythonのメソッド
+                    if any(word in title for word in ['javascript', 'js', 'react', 'vue', 'css', 'html']): 
+                    # if any(): リストやイテレータの中に1つでもtrueになる要素があればtrueを返す
                         category = 'フロントエンド'
                     elif any(word in title for word in ['python', 'java', 'node', 'go', 'database', 'sql', 'php']):
                         category = 'バックエンド'
@@ -151,6 +154,8 @@ jobs:
             def update_readme(stats):
                 """README.mdを更新"""
                 now = datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')
+                # UTC: 協定世界時(Universal Time Coordinated)
+                ## 世界共通の標準時刻で、時差や夏時間の影響を受けない
                 
                 readme_lines = [
                     "# 🎓 Learning Record System",
@@ -160,7 +165,7 @@ jobs:
                     "## 📊 学習統計",
                     "",
                     "### 全体サマリー",
-                    f"- **総学習トピック数**: {stats['total_learning_topics']}",
+                    f"- **総学習トピック数**: {stats['total_learning_topics']}", # {}プレースホルダー
                     f"- **完了済み**: {stats['completed_topics']}",
                     f"- **進行中**: {stats['in_progress_topics']}",
                     f"- **今月完了**: {stats['this_month_completed']}",
@@ -171,6 +176,11 @@ jobs:
                 
                 if stats['categories']:
                     for category, data in stats['categories'].items():
+                    # stats['categories']という辞書の全てのキー(category)と値(data)を順番に取り出して処理
+                    # stats['categories']: カテゴリごとの統計データが入った辞書
+                    # .items():キーと値のペアを取得
+                    # caterogy にはカテゴリ名、data にはそのカテゴリのデータが入る
+
                         completion_rate = (data['completed'] / data['total'] * 100) if data['total'] > 0 else 0
                         readme_lines.append(f"- **{category}**: {data['completed']}/{data['total']} ({completion_rate:.1f}%完了)")
                 else:
@@ -231,7 +241,7 @@ jobs:
                     "> このシステムは学習の継続性を支援し、採用活動でのポートフォリオとして活用できるよう設計されています。"
                 ])
                 
-                return "\n".join(readme_lines)
+                return "\n".join(readme_lines) # `readme_lines`リストの各要素を改行`\n`で繋げて一つの文字列にまとめている
             
             # メイン処理
             def main():
@@ -267,6 +277,7 @@ jobs:
                         
                     # 統計取得
                     stats = get_learning_stats(repo) # 上記で定義している
+                                                     # 集計したstatsが返ってくる
                     
                     # README更新
                     new_readme = update_readme(stats)
@@ -275,6 +286,13 @@ jobs:
                     try:
                         readme_file = repo.get_contents("README.md")
                         repo.update_file("README.md", "📊 Update learning statistics [automated]", new_readme, readme_file.sha)
+                        # "README.md": 更新するファイル名
+                        # "📊 Update learning statistics [automated]": コミットメッセージ
+                        # new_readme: 新しい内容
+                        # readme_file.sha: 現在のファイルのSHA(バージョン管理のために必要)
+                        ## sha: Secure Hash Algorithm
+                        ### Gitでは、各コミットやファイルの内容を一意に識別するためのハッシュ値として使われる
+                        ### ファイル更新時にどのバージョンを更新するかを指定するために必要
                     except:
                         repo.create_file("README.md", "📊 Create learning statistics [automated]", new_readme)
                         
@@ -287,6 +305,8 @@ jobs:
             
             if __name__ == "__main__":
                 main()
+                # Pythonファイルが直接実行された場合にmain()関数を呼び出すための記述
+                # このファイルが他からインポートされた場合は実行されず、直接実行された時だけmain()が動く
             EOF
 
         - name: Update learning statistics
