@@ -153,8 +153,7 @@ jobs:
 
       - name: Combine README files
         run: |
-          cat README.manual.md >> README.md
-          cat README.auto.md >> README.md
+          cat README.manual.md README.auto.md > README.md
           
       - name: Commit changes
         run: |
