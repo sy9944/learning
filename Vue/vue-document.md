@@ -24,3 +24,6 @@ vformは、Laravelをバックエンドとして使う際に、フォームと�
 <img :src="imageUrl" :alt="imageDescription">
 ```
 上記の例では、`src`と`alt`属性に動的な値をバインドしています。`:`を使うことで、VueのリアクティブデータをHTML属性に簡単に適用できます。
+
+## フロントでのデータ参照例
+<pre>{{ responses.result.data }}</pre>
