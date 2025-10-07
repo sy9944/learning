@@ -103,3 +103,43 @@ $name = 'John';
 $age = 30;
 $formatted = sprintf('My name is %s and I am %d years old.', $name, $age);
 // $formatted = 'My name is John and I am 30 years old.'
+```
+
+## 静的メソッド・非静的メソッド
+### 静的メソッド
+静的メソッドは、クラスに属するメソッドであり、インスタンス化せずに直接呼び出すことができます。  
+`static` キーワードを使用して定義され、クラス名を通じてアクセスします。
+
+例:
+```php
+class Example {
+    public static function staticMethod() {
+        return "This is a static method.";
+    }
+}
+
+// 静的メソッドの呼び出し
+echo Example::staticMethod();
+```
+
+非静的メソッド
+非静的メソッドは、クラスのインスタンスに属するメソッドであり、インスタンス化したオブジェクトを通じて呼び出します。
+$this キーワードを使用して、クラス内のプロパティや他のメソッドにアクセスできます。
+
+例:
+```php
+<?php
+class Example {
+    public function nonStaticMethod() {
+        return "This is a non-static method.";
+    }
+}
+
+// インスタンス化して非静的メソッドを呼び出す
+$instance = new Example();
+echo $instance->nonStaticMethod();
+```
+
+主な違い
+静的メソッド: クラス全体で共有され、インスタンス化せずに使用可能。
+非静的メソッド: インスタンスごとに異なる動作を持ち、インスタンス化が必要。
