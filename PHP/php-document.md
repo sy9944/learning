@@ -143,3 +143,21 @@ echo $instance->nonStaticMethod();
 主な違い
 静的メソッド: クラス全体で共有され、インスタンス化せずに使用可能。
 非静的メソッド: インスタンスごとに異なる動作を持ち、インスタンス化が必要。
+
+## `substr()`
+```php
+<?php
+substr($string, $start, $length)
+```
+$string: 対象の文字列
+
+$start: 開始位置（0が先頭）
+
+$length: 切り出す長さ（省略すると最後まで）
+
+例
+```php
+<?php
+$time = "16:45:00";
+$shortTime = substr($time, 0, 5); // "16:45"
+```
