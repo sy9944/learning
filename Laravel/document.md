@@ -55,3 +55,9 @@ php arisan migrate
 ```sh
 php artisan migrate:rollback
 ```
+
+## キャッシュクリア
+```sh
+php artisan config:cache
+php artisan cache:clear
+```
