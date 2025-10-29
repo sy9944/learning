@@ -48,7 +48,7 @@ php artisan make:migration ファイル名 --tabel=テーブル名
 
 マイグレート実行
 ```sh
-php arisan migrate
+php artisan migrate
 ```
 
 マイグレート巻き戻し
